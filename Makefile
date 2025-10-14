@@ -44,4 +44,4 @@ mocks-generate: mocks-install
 .PHONY: mocks-clean
 mocks-clean:
 	echo "Cleaning generated mocks..."
-	find . -name "mocks_test.go" -type f -delete
+	rm -rf internal/mocks
