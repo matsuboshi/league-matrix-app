@@ -321,7 +321,7 @@ make mocks-generate
 make mocks-clean
 ```
 
-Mock configuration is defined in `.mockery.yml` and generates `mocks_test.go` files in each package.
+Mock configuration is defined in `.mockery.yml` and generates mock files in `internal/mocks/` directory.
 
 ---
 ## 📚 What Was Implemented
