@@ -1,0 +1,177 @@
+#!/bin/bash
+
+
+echo "========================================"
+echo "http://localhost:8080/max"
+curl -s http://localhost:8080/max
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix"
+curl -s http://localhost:8080/matrix
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/echo?file=testdata/matrix0.csv"
+curl -s "http://localhost:8080/matrix/echo?file=testdata/matrix0.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/invert?file=testdata/matrix0.csv"
+curl -s "http://localhost:8080/matrix/invert?file=testdata/matrix0.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix0.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix0.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/flatten?file=testdata/matrix0.csv"
+curl -s "http://localhost:8080/matrix/flatten?file=testdata/matrix0.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/multiply?file=testdata/matrix0.csv"
+curl -s "http://localhost:8080/matrix/multiply?file=testdata/matrix0.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/multiply?file=testdata/matrix0.csv"
+curl -s "http://localhost:8080/matrix/multiply?file=testdata/matrix0.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/echo?file=testdata/matrix1.csv"
+curl -s "http://localhost:8080/matrix/echo?file=testdata/matrix1.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix1.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix1.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/multiply?file=testdata/matrix1.csv"
+curl -s "http://localhost:8080/matrix/multiply?file=testdata/matrix1.csv"
+echo ""
+echo ""
+echo ""
+
+
+echo "========================================"
+echo "http://localhost:8080/matrix/flatten?file=testdata/matrix1.csv"
+curl -s "http://localhost:8080/matrix/flatten?file=testdata/matrix1.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/invert?file=testdata/matrix1.csv"
+curl -s "http://localhost:8080/matrix/invert?file=testdata/matrix1.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix3.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix3.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix4.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix4.csv"
+echo ""
+echo ""
+echo ""
+
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix5.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix5.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix6.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix6.csv"
+echo ""
+echo ""
+echo ""
+
+
+echo "========================================"
+echo "http://localhost:8080/matrix/divide?file=testdata/matrix1.csv"
+curl -s "http://localhost:8080/matrix/divide?file=testdata/matrix1.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=nonexistent.csv"
+curl -s "http://localhost:8080/matrix/sum?file=nonexistent.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/../../../secrets.env"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/../../../secrets.env"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix2.txt"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix2.txt"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/matrix2.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/matrix2.csv"
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file="
+curl -s "http://localhost:8080/matrix/sum?file="
+echo ""
+echo ""
+echo ""
+
+echo "========================================"
+echo "http://localhost:8080/matrix/sum?file=testdata/gopher.jpg.csv"
+curl -s "http://localhost:8080/matrix/sum?file=testdata/gopher.jpg.csv"
+echo ""
+echo ""
+echo ""
+
+
+echo "Tests completed!"
+
