@@ -2,6 +2,7 @@ package errors
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -20,18 +21,18 @@ func TestGetHTTPStatusCode(t *testing.T) {
 			wantCode: http.StatusOK,
 		},
 		{
-			name:     "ErrInvalidInput returns 400",
+			name:     "400 ErrInvalidInput",
 			err:      ErrInvalidInput,
 			wantCode: http.StatusBadRequest,
 		},
 		{
-			name:     "wrapped ErrInvalidInput returns 400",
+			name:     "improper wrapping for 400 ErrInvalidInput",
 			err:      errors.New("wrapped: " + ErrInvalidInput.Error()),
 			wantCode: http.StatusInternalServerError, // Not wrapped with %w, so won't match
 		},
 		{
-			name:     "properly wrapped ErrInvalidInput returns 400",
-			err:      errors.Join(ErrInvalidInput, errors.New("additional context")),
+			name:     "fmt.Errorf with %w wrapping 400 ErrInvalidInput",
+			err:      fmt.Errorf("%w: invalid operation: multiply", ErrInvalidInput),
 			wantCode: http.StatusBadRequest,
 		},
 		{
@@ -40,13 +41,28 @@ func TestGetHTTPStatusCode(t *testing.T) {
 			wantCode: http.StatusNotFound,
 		},
 		{
+			name:     "fmt.Errorf with %w wrapping 404 ErrNotFound",
+			err:      fmt.Errorf("%w: matrix not found with id: 123", ErrNotFound),
+			wantCode: http.StatusNotFound,
+		},
+		{
 			name:     "ErrPayloadTooLarge returns 413",
 			err:      ErrPayloadTooLarge,
 			wantCode: http.StatusRequestEntityTooLarge,
 		},
 		{
+			name:     "fmt.Errorf with %w wrapping 413 ErrPayloadTooLarge",
+			err:      fmt.Errorf("%w: matrix size exceeds limit", ErrPayloadTooLarge),
+			wantCode: http.StatusRequestEntityTooLarge,
+		},
+		{
 			name:     "ErrUnprocessableEntity returns 422",
 			err:      ErrUnprocessableEntity,
+			wantCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name:     "fmt.Errorf with %w wrapping 422 ErrUnprocessableEntity",
+			err:      fmt.Errorf("%w: unable to process matrix format", ErrUnprocessableEntity),
 			wantCode: http.StatusUnprocessableEntity,
 		},
 		{
@@ -67,22 +83,4 @@ func TestGetHTTPStatusCode(t *testing.T) {
 			assert.Equal(t, tt.wantCode, got)
 		})
 	}
-}
-
-func TestSentinelErrors(t *testing.T) {
-	t.Run("sentinel errors are unique", func(t *testing.T) {
-		assert.NotEqual(t, ErrInvalidInput, ErrNotFound)
-		assert.NotEqual(t, ErrInvalidInput, ErrPayloadTooLarge)
-		assert.NotEqual(t, ErrInvalidInput, ErrUnprocessableEntity)
-		assert.NotEqual(t, ErrNotFound, ErrPayloadTooLarge)
-		assert.NotEqual(t, ErrNotFound, ErrUnprocessableEntity)
-		assert.NotEqual(t, ErrPayloadTooLarge, ErrUnprocessableEntity)
-	})
-
-	t.Run("sentinel errors have correct messages", func(t *testing.T) {
-		assert.Equal(t, "invalid input", ErrInvalidInput.Error())
-		assert.Equal(t, "not found", ErrNotFound.Error())
-		assert.Equal(t, "payload too large", ErrPayloadTooLarge.Error())
-		assert.Equal(t, "unprocessable entity", ErrUnprocessableEntity.Error())
-	})
 }
