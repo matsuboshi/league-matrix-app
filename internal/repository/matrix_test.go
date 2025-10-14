@@ -21,7 +21,7 @@ func TestMatrixRepository_GetFileContent(t *testing.T) {
 	}{
 		{
 			name:     "successfully read matrix1.csv",
-			filePath: "../../testdata/matrix1.csv",
+			filePath: "testdata/matrix1.csv",
 			wantContent: &MatrixFileContent{
 				Content: [][]string{
 					{"1", "2", "3"},
@@ -39,7 +39,7 @@ func TestMatrixRepository_GetFileContent(t *testing.T) {
 		},
 		{
 			name:     "successfully read matrix0.csv - large values",
-			filePath: "../../testdata/matrix0.csv",
+			filePath: "testdata/matrix0.csv",
 			wantContent: &MatrixFileContent{
 				Content: [][]string{
 					{"1000000", "1000000", "1000000"},
@@ -58,19 +58,19 @@ func TestMatrixRepository_GetFileContent(t *testing.T) {
 		},
 		{
 			name:     "file not found",
-			filePath: "../../testdata/nonexistent.csv",
+			filePath: "testdata/nonexistent.csv",
 			wantErr:  true,
 			errType:  apperrors.ErrNotFound,
 		},
 		{
 			name:     "file too large",
-			filePath: "../../testdata/gopher.jpg.csv",
+			filePath: "testdata/gopher.jpg.csv",
 			wantErr:  true,
 			errType:  apperrors.ErrPayloadTooLarge,
 		},
 		{
 			name:     "invalid CSV format in matrix2.csv",
-			filePath: "../../testdata/matrix2.csv",
+			filePath: "testdata/matrix2.csv",
 			wantContent: &MatrixFileContent{
 				Content: [][]string{
 					{"a", "2", "3"},
@@ -109,7 +109,7 @@ func TestMatrixRepository_GetFileContent_ContextCancellation(t *testing.T) {
 		cancel() // Cancel immediately
 
 		repo := NewMatrixRepository()
-		got, err := repo.GetFileContent(ctx, "../../testdata/matrix1.csv")
+		got, err := repo.GetFileContent(ctx, "testdata/matrix1.csv")
 
 		assert.Error(t, err)
 		assert.Nil(t, got)
