@@ -1,22 +1,3 @@
-PKGS=cmd \
-  internal/handler \
-  internal/domain \
-  internal/repository \
-  internal/entity
-
-.PHONY: gomock
-gomock: 
-	go install github.com/vektra/mockery/v2@latest
-	$(foreach dir, $(PKGS), \
-		$(shell rm -rf $(dir)/gomocks) \
-		$(foreach file, $(filter-out %_test.go, $(wildcard $(dir)/*.go)), \
-			$(shell if [ $$(cat $(file) | grep -c "type .* interface") -gt 0 ]; \
-			then \
-				mockgen -source=$(file) -destination=$(dir)/gomocks/$(notdir $(file)) -package=gomocks; \
-			fi ) \
-		) \
-	)
-
 # Download dependencies
 .PHONY: deps
 deps:
@@ -27,3 +8,40 @@ deps:
 .PHONY: run
 run:
 	go run cmd/main.go
+
+# Run tests
+.PHONY: test
+test:
+	go test -v -race ./...
+
+# Run tests with coverage
+.PHONY: test-coverage
+test-coverage:
+	go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+	go tool cover -html=coverage.out -o coverage.html
+	open coverage.html
+	echo "Coverage report: coverage.html"
+
+# Install mockery
+.PHONY: mocks-install
+mocks-install:
+	go install github.com/vektra/mockery/v3@v3.5.0
+
+# Initialize mockery
+.PHONY: mocks-init
+mocks-init: mocks-install
+	echo "Initializing mockery..."
+	mockery init $(shell go list -m)
+	echo '      recursive: true' >> .mockery.yml
+
+# Generate mocks
+.PHONY: mocks-generate
+mocks-generate: mocks-install
+	echo "Generating mocks..."
+	mockery
+
+# Clean generated mocks
+.PHONY: mocks-clean
+mocks-clean:
+	echo "Cleaning generated mocks..."
+	find . -name "mocks_test.go" -type f -delete
