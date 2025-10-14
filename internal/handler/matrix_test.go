@@ -10,23 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
+	"github.com/matsuboshi/league-matrix-app/internal/mocks"
 	apperrors "github.com/matsuboshi/league-matrix-app/pkg/errors"
 )
-
-// mockMatrixDomain is a mock implementation of domain.MatrixDomainInterface for testing
-type mockMatrixDomain struct {
-	mock.Mock
-}
-
-func (m *mockMatrixDomain) ListMatrixOperations() (string, error) {
-	args := m.Called()
-	return args.String(0), args.Error(1)
-}
-
-func (m *mockMatrixDomain) ProcessMatrix(ctx context.Context, operation string, filePath string) (string, error) {
-	args := m.Called(ctx, operation, filePath)
-	return args.String(0), args.Error(1)
-}
 
 func TestMatrixHandler_ListMatrixOperations(t *testing.T) {
 	tests := []struct {
@@ -70,7 +56,7 @@ func TestMatrixHandler_ListMatrixOperations(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create mock domain
-			mockDomain := &mockMatrixDomain{}
+			mockDomain := mocks.NewMockMatrixDomainInterface(t)
 
 			// Setup expectations only for GET requests
 			if tt.method == http.MethodGet {
@@ -201,7 +187,7 @@ func TestMatrixHandler_ProcessMatrix(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create mock domain
-			mockDomain := &mockMatrixDomain{}
+			mockDomain := mocks.NewMockMatrixDomainInterface(t)
 
 			// Setup expectations only for GET requests
 			if tt.method == http.MethodGet {
@@ -240,7 +226,7 @@ func TestMatrixHandler_ProcessMatrix(t *testing.T) {
 
 func TestMatrixHandler_ProcessMatrix_ContextHandling(t *testing.T) {
 	t.Run("context cancelled by client", func(t *testing.T) {
-		mockDomain := &mockMatrixDomain{}
+		mockDomain := mocks.NewMockMatrixDomainInterface(t)
 		mockDomain.On("ProcessMatrix", mock.Anything, "sum", "testdata/matrix1.csv").
 			Return("", context.Canceled)
 
@@ -259,7 +245,7 @@ func TestMatrixHandler_ProcessMatrix_ContextHandling(t *testing.T) {
 	})
 
 	t.Run("context deadline exceeded", func(t *testing.T) {
-		mockDomain := &mockMatrixDomain{}
+		mockDomain := mocks.NewMockMatrixDomainInterface(t)
 		mockDomain.On("ProcessMatrix", mock.Anything, "sum", "testdata/matrix1.csv").
 			Return("", context.DeadlineExceeded)
 
@@ -333,7 +319,7 @@ func TestMatrixHandler_HealthCheck(t *testing.T) {
 
 func TestMatrixHandler_ErrorHandling(t *testing.T) {
 	t.Run("domain error is properly mapped to HTTP status", func(t *testing.T) {
-		mockDomain := &mockMatrixDomain{}
+		mockDomain := mocks.NewMockMatrixDomainInterface(t)
 		mockDomain.On("ProcessMatrix", mock.Anything, "sum", "invalid").
 			Return("", errors.New("some domain error"))
 
@@ -350,7 +336,7 @@ func TestMatrixHandler_ErrorHandling(t *testing.T) {
 	})
 
 	t.Run("list operations error handling", func(t *testing.T) {
-		mockDomain := &mockMatrixDomain{}
+		mockDomain := mocks.NewMockMatrixDomainInterface(t)
 		mockDomain.On("ListMatrixOperations").
 			Return("", errors.New("internal error"))
 

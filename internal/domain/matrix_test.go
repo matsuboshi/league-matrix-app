@@ -9,22 +9,10 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/matsuboshi/league-matrix-app/internal/entity"
+	"github.com/matsuboshi/league-matrix-app/internal/mocks"
 	"github.com/matsuboshi/league-matrix-app/internal/repository"
 	apperrors "github.com/matsuboshi/league-matrix-app/pkg/errors"
 )
-
-// mockMatrixRepository is a mock implementation of repository.MatrixRepositoryInterface for testing
-type mockMatrixRepository struct {
-	mock.Mock
-}
-
-func (m *mockMatrixRepository) GetFileContent(ctx context.Context, filePath string) (*repository.MatrixFileContent, error) {
-	args := m.Called(ctx, filePath)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*repository.MatrixFileContent), args.Error(1)
-}
 
 func TestMatrixDomain_ListMatrixOperations(t *testing.T) {
 	tests := []struct {
@@ -50,7 +38,7 @@ func TestMatrixDomain_ListMatrixOperations(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create mocks using Mockery v3
-			mockOperations := NewMockMatrixOperationsDomainInterface(t)
+			mockOperations := mocks.NewMockMatrixOperationsDomainInterface(t)
 
 			// Setup expectations using testify/mock syntax
 			mockOperations.On("ListOperations").Return(tt.mockOperations)
@@ -241,9 +229,9 @@ func TestMatrixDomain_ProcessMatrix(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create mocks
-			mockRepo := &mockMatrixRepository{}
-			mockValidator := NewMockMatrixValidatorDomainInterface(t)
-			mockOperations := NewMockMatrixOperationsDomainInterface(t)
+			mockRepo := mocks.NewMockMatrixRepositoryInterface(t)
+			mockValidator := mocks.NewMockMatrixValidatorDomainInterface(t)
+			mockOperations := mocks.NewMockMatrixOperationsDomainInterface(t)
 
 			// Setup expectations based on test case
 			if tt.operation != "" {
@@ -331,9 +319,9 @@ func TestMatrixDomain_ProcessMatrix_ContextCancellation(t *testing.T) {
 
 			if !tt.wantErr {
 				// Setup mocks for successful case
-				mockRepo := &mockMatrixRepository{}
-				mockValidator := NewMockMatrixValidatorDomainInterface(t)
-				mockOperations := NewMockMatrixOperationsDomainInterface(t)
+				mockRepo := mocks.NewMockMatrixRepositoryInterface(t)
+				mockValidator := mocks.NewMockMatrixValidatorDomainInterface(t)
+				mockOperations := mocks.NewMockMatrixOperationsDomainInterface(t)
 
 				mockValidator.On("ValidateFilePath", mock.Anything, "testdata/matrix1.csv").Return(nil)
 				mockOperations.On("IsValidOperation", mock.Anything, "sum").Return(nil)
@@ -372,7 +360,7 @@ func TestMatrixDomain_ProcessMatrix_ContextCancellation(t *testing.T) {
 
 func TestMatrixDomain_ProcessMatrix_ErrorPropagation(t *testing.T) {
 	t.Run("error from validator is properly wrapped", func(t *testing.T) {
-		mockValidator := NewMockMatrixValidatorDomainInterface(t)
+		mockValidator := mocks.NewMockMatrixValidatorDomainInterface(t)
 		mockValidator.On("ValidateFilePath", mock.Anything, "invalid/path").
 			Return(errors.New("custom validation error"))
 
@@ -386,9 +374,9 @@ func TestMatrixDomain_ProcessMatrix_ErrorPropagation(t *testing.T) {
 	})
 
 	t.Run("error from repository is properly wrapped", func(t *testing.T) {
-		mockValidator := NewMockMatrixValidatorDomainInterface(t)
-		mockOperations := NewMockMatrixOperationsDomainInterface(t)
-		mockRepo := &mockMatrixRepository{}
+		mockValidator := mocks.NewMockMatrixValidatorDomainInterface(t)
+		mockOperations := mocks.NewMockMatrixOperationsDomainInterface(t)
+		mockRepo := mocks.NewMockMatrixRepositoryInterface(t)
 
 		mockValidator.On("ValidateFilePath", mock.Anything, "testdata/matrix1.csv").Return(nil)
 		mockOperations.On("IsValidOperation", mock.Anything, "sum").Return(nil)
