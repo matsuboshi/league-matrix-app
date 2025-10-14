@@ -1,16 +1,25 @@
 package main
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
-	"time"
+	"os"
+
+	"github.com/matsuboshi/league-matrix-app/internal/handler"
 )
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s", time.Now())
-}
+const port = "8080"
 
 func main() {
-	http.HandleFunc("/", greet)
-	http.ListenAndServe(":8080", nil)
+	matrixHandler := handler.NewMatrixHandler()
+
+	http.HandleFunc("/", matrixHandler.ListMatrixOperations)
+	http.HandleFunc("/matrix", matrixHandler.ListMatrixOperations)
+	http.HandleFunc("/matrix/", matrixHandler.ProcessMatrix)
+
+	slog.Info("starting HTTP server", "port", port, "address", "http://localhost:"+port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		slog.Error("server failed to start", "error", err, "port", port)
+		os.Exit(1)
+	}
 }
