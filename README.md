@@ -87,6 +87,11 @@ This script tests all operations with various test cases including edge cases an
 
 ### API Endpoints
 
+**Health Check:**
+```bash
+curl http://localhost:8080/health
+```
+
 **List Available Operations:**
 ```bash
 curl http://localhost:8080/
@@ -181,8 +186,17 @@ make run
 # Download dependencies
 make deps
 
-# Generate mocks for testing
-make gomock
+# Run tests
+make test
+
+# Run tests with coverage report
+make test-coverage
+
+# Generate mocks (using mockery v3)
+make mocks-generate
+
+# Clean generated mocks
+make mocks-clean
 ```
 
 ---
@@ -210,10 +224,16 @@ The service returns appropriate HTTP status codes:
 | 404 | Not Found | File doesn't exist |
 | 413 | Payload Too Large | File exceeds 1KB limit |
 | 422 | Unprocessable Entity | Invalid CSV format, matrix validation errors |
-| 504 | Gateway Timeout | Request timeout (if timeout middleware added) |
+| 504 | Gateway Timeout | Request timeout |
 
 ---
 ## 📝 API Response Examples
+
+**Health Check Response:**
+```bash
+$ curl http://localhost:8080/health
+OK
+```
 
 **Success Response:**
 ```bash
@@ -233,10 +253,75 @@ invalid input: path traversal not allowed
 The application uses structured logging with `log/slog`:
 
 ```
-2025-10-14T10:00:00.000Z INFO starting HTTP server port=8080 address=http://localhost:8080
+2025-10-14T10:00:00.000Z INFO starting HTTP server port=8080 address=http://localhost:8080 read_timeout=7s write_timeout=30s
 2025-10-14T10:00:01.000Z INFO matrix operation completed operation=sum file_path=testdata/matrix1.csv
 2025-10-14T10:00:02.000Z ERROR matrix operation failed operation=divide file_path=testdata/matrix1.csv error="invalid input: invalid operation: divide" status_code=400
 ```
+
+---
+## 🛑 Graceful Shutdown
+
+The server implements graceful shutdown to ensure in-flight requests complete before stopping:
+
+```bash
+# Press Ctrl+C or send SIGTERM to stop the server
+$ make run
+INFO starting HTTP server port=8080 address=http://localhost:8080
+^C
+INFO shutdown signal received signal=interrupt
+INFO gracefully shutting down server timeout=30s
+INFO server stopped gracefully
+```
+
+**How it works:**
+- Listens for `SIGINT` (Ctrl+C) and `SIGTERM` signals
+- Stops accepting new connections
+- Waits up to 30 seconds for in-flight requests to complete
+- Logs shutdown progress
+- Exits cleanly with proper resource cleanup
+
+**Use cases:**
+- ✅ Safe deployments (zero downtime)
+- ✅ Kubernetes pod termination
+- ✅ Docker container stops
+- ✅ Manual server restarts
+
+---
+## 🧪 Testing
+
+### Test Infrastructure
+
+The project uses **modern Go testing tools**:
+
+- **Testing Framework**: Go's built-in `testing` package
+- **Mock Generation**: [Mockery v3](https://github.com/vektra/mockery) with testify mocks
+- **Assertions**: [testify/assert](https://github.com/stretchr/testify)
+- **Coverage Reports**: Go's native coverage tools
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Generate coverage report
+make test-coverage
+# Opens coverage.html showing line-by-line coverage
+```
+
+### Mock Generation
+
+Mocks are automatically generated from interfaces:
+
+```bash
+# Generate mocks
+make mocks-generate
+
+# Clean all mocks
+make mocks-clean
+```
+
+Mock configuration is defined in `.mockery.yml` and generates `mocks_test.go` files in each package.
 
 ---
 ## 📚 What Was Implemented
@@ -250,7 +335,11 @@ The application uses structured logging with `log/slog`:
 ✅ Performance optimizations (`strings.Builder`, `big.Int`)  
 ✅ Production-grade code quality  
 ✅ GoDoc documentation  
-✅ Mock generation support  
+✅ Modern testing infrastructure (Mockery v3, testify)  
+✅ Test coverage reporting  
+✅ Health check endpoint for monitoring  
+✅ HTTP server timeouts configured  
+✅ Graceful shutdown with signal handling  
 
 
 ---
