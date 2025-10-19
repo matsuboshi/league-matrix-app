@@ -5,7 +5,7 @@ A production-grade Go HTTP service for performing matrix operations on CSV files
 ---
 ## 🎯 Features
 
-The service provides 5 matrix operations on CSV files:
+The service provides 5 matrix operations (Echo, Invert, Flatten, Sum, Multiply) on CSV files:
 
 ### 1. **Echo**
 Returns the matrix in its original format.
